@@ -5,7 +5,8 @@
   "description": "This is a microservice for CCP.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint --config eslint.config.mjs \"./src/**/*.js\""
   },
   "repository": {
     "type": "git",
@@ -14,6 +15,9 @@
   "author": "Sahibpreet Singh",
   "license": "UNLICENSED",
   "devDependencies": {
+    "@eslint/js": "^9.2.0",
+    "eslint": "^9.2.0",
+    "globals": "^15.1.0",
     "prettier": "3.2.5"
   }
 }
