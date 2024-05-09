@@ -11,11 +11,14 @@ Before you start, ensure you have Node.js installed on your machine. Additionall
 - `nodemon`
 - `eslint`
 - `cross-env`
+- `pino`
+- `helmet`
+- `compression`
 
 You can install them using npm:
 
 ```bash
-npm install -g nodemon eslint cross-env
+npm install -g nodemon eslint cross-env pino helmet compression stoppable
 ```
 
 ### Installation
