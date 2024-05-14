@@ -2,4 +2,5 @@
 # Dependency directories
 node_modules/
 
+# Don't include .env, which might have sensitive information
 .env
