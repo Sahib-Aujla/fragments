@@ -8,6 +8,7 @@ const passport = require('passport');
 const authenticate = require('./auth');
 
 const logger = require('./logger');
+const { createErrorResponse } = require('./response');
 const pino = require('pino-http')({
   // Use our default logger instance, which is already configured
   logger,
@@ -37,13 +38,8 @@ app.use('/', require('./routes'));
 
 // Add 404 middleware to handle any requests for resources that can't be found
 app.use((req, res) => {
-  res.status(404).json({
-    status: 'error',
-    error: {
-      message: 'not found',
-      code: 404,
-    },
-  });
+  const errorResponse=createErrorResponse(404,'not found');
+  res.status(404).json(errorResponse);
 });
 
 // Add error-handling middleware to deal with anything else
@@ -58,14 +54,9 @@ app.use((err, req, res, next) => {
   if (status > 499) {
     logger.error({ err }, `Error processing request`);
   }
+  const errorResponse=createErrorResponse(status,message);
 
-  res.status(status).json({
-    status: 'error',
-    error: {
-      message,
-      code: status,
-    },
-  });
+  res.status(status).json(errorResponse);
 });
 
 module.exports = app;
