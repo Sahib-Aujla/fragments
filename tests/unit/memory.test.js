@@ -42,10 +42,14 @@ describe('fragments memory', () => {
   });
 
   test('should return all the fragments', async () => {
-    const a2 = await writeFragment({ ...fragment, id: 'bob' });
-    const res = await listFragments(fragment.ownerId);
+    const fragment2 = { ...fragment, id: 'bob' };
+    const a2 = await writeFragment(fragment2);
+    const res1 = await listFragments(fragment.ownerId);
+    const res2 = await listFragments(fragment.ownerId, true);
+
     expect(a2).toBe(undefined);
-    expect(res).toEqual(['abc', 'bob']);
+    expect(res1).toEqual(['abc', 'bob']);
+    expect(res2).toEqual([fragment, fragment2]);
   });
 
   test('should delete all fragments', async () => {
