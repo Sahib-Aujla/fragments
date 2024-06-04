@@ -19,12 +19,15 @@ const app = express();
 
 // Use pino logging middleware
 app.use(pino);
-
 // Use helmetjs security middleware
 app.use(helmet());
 
 // Use CORS middleware so we can make requests across origins
-app.use(cors());
+app.use(
+  cors({
+    exposedHeaders: ['Location'],
+  })
+);
 
 // Use gzip/deflate compression middleware
 app.use(compression());
@@ -38,7 +41,7 @@ app.use('/', require('./routes'));
 
 // Add 404 middleware to handle any requests for resources that can't be found
 app.use((req, res) => {
-  const errorResponse=createErrorResponse(404,'not found');
+  const errorResponse = createErrorResponse(404, 'not found');
   res.status(404).json(errorResponse);
 });
 
@@ -54,7 +57,7 @@ app.use((err, req, res, next) => {
   if (status > 499) {
     logger.error({ err }, `Error processing request`);
   }
-  const errorResponse=createErrorResponse(status,message);
+  const errorResponse = createErrorResponse(status, message);
 
   res.status(status).json(errorResponse);
 });

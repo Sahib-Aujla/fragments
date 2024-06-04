@@ -33,7 +33,12 @@ module.exports = async (req, res) => {
       return res.status(500).json(createErrorResponse(500, 'server error'));
     }
     logger.info('successfully created fragment');
-    return res.status(200).json(createSuccessResponse({ fragment: newFragment }));
+    logger.debug({ location });
+
+    return res
+      .status(201)
+      .location(location)
+      .json(createSuccessResponse({ fragment: newFragment }));
   } catch (error) {
     logger.error('error saving fragment', { error });
 

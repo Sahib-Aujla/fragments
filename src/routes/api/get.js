@@ -9,7 +9,13 @@ const logger = require('../../logger');
  */
 module.exports = async (req, res) => {
   // TODO: this is just a placeholder. To get something working, return an empty array...
-  const data = await Fragment.byUser(req.user,true);
+  logger.info('request received to get fragments.');
+  const { expand } = req.query;
+  logger.debug({ expand });
+  let data = await Fragment.byUser(req.user, parseInt(expand));
   logger.debug({ data });
+  if (!data) {
+    data = [];
+  }
   res.status(200).json(createSuccessResponse({ fragments: data }));
 };
