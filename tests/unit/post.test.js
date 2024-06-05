@@ -28,7 +28,7 @@ describe('POST /v1/fragments', () => {
     expect(res.body.fragment).toHaveProperty('id');
     expect(res.body.fragment.type).toBe('text/plain');
     expect(res.body.fragment.ownerId).toBe('user1@email.com');
-
+    expect(res.headers['location']).toBeDefined();
     expect(res.body.fragment.size).toBe(5);
   });
 

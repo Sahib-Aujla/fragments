@@ -2,7 +2,7 @@ const { createSuccessResponse, createErrorResponse } = require('../../response')
 const { Fragment } = require('../../model/fragment');
 const contentType = require('content-type');
 const logger = require('../../logger');
-require('dotenv').config();
+
 /**
  * Get a list of fragments for the current user
  */
@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
 
   const { type } = contentType.parse(req);
   logger.debug({ type });
-  if (type !== 'text/plain') {
+  if (!Fragment.isSupportedType(type)) {
     return res.status(415).json(createErrorResponse(415, 'Invalid type'));
   }
   logger.debug('buffer: ', req.body);
@@ -30,14 +30,8 @@ module.exports = async (req, res) => {
 
     logger.info(req.headers.host);
     logger.info(process.env.API_URL + '   port');
-    let url;
-    if (!process.env.API_URL) {
-      const host = req.headers.host;
-      const protocol = req.protocol || 'http';
-      url = `${protocol}://${host}`;
-    } else {
-      url = process.env.API_URL;
-    }
+    const url = process.env.API_URL || `${req.protocol || 'http'}://${req.headers.host}`;
+
     logger.info('url: ' + url);
     let location;
 
@@ -47,7 +41,7 @@ module.exports = async (req, res) => {
     logger.debug({ location });
     return res
       .status(201)
-      .location('location')
+      .location(location)
       .json(createSuccessResponse({ fragment: newFragment }));
   } catch (error) {
     logger.error('error creating fragment', { error });

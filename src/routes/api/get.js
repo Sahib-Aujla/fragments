@@ -14,8 +14,5 @@ module.exports = async (req, res) => {
   logger.debug({ expand });
   let data = await Fragment.byUser(req.user, parseInt(expand));
   logger.debug({ data });
-  if (!data) {
-    data = [];
-  }
   res.status(200).json(createSuccessResponse({ fragments: data }));
 };

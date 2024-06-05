@@ -21,4 +21,10 @@ describe('GET /v1/fragments', () => {
   });
 
   // TODO: we'll need to add tests to check the contents of the fragments array later
+  test('authenticated users receives empty array', async () => {
+    const res = await request(app).get('/v1/fragments').auth('user1@email.com', 'password1');
+    expect(res.statusCode).toBe(200);
+    expect(res.body.status).toBe('ok');
+    expect(res.body.fragments).toEqual([]);
+  });
 });
