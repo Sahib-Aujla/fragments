@@ -64,4 +64,16 @@ describe('POST /v1/fragments', () => {
       },
     });
   });
+
+
+  test('authenticated user sends invalid format as content-type', async () => {
+    const res = await request(app)
+      .post('/v1/fragments')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'abcd');
+    logger.debug({ res });
+    expect(res.statusCode).toBe(500);
+  });
+
+
 });

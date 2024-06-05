@@ -17,7 +17,14 @@ const logger = require('../logger');
 
 class Fragment {
   static supportedTypes = ['text/plain'];
-  constructor({ id, ownerId, created, updated, type, size = 0 }) {
+  constructor({
+    id,
+    ownerId,
+    created = new Date().toISOString(),
+    updated = new Date().toISOString(),
+    type,
+    size = 0,
+  }) {
     // TODO
     if (!ownerId || !type) {
       logger.debug('here' + ownerId + '  ' + type);
@@ -32,8 +39,8 @@ class Fragment {
     }
     this.id = id || randomUUID();
     this.ownerId = ownerId;
-    this.created = created || new Date().toISOString();
-    this.updated = updated || new Date().toISOString();
+    this.created = created;
+    this.updated = updated;
     this.type = type;
     this.size = size;
     return this;
@@ -56,10 +63,15 @@ class Fragment {
    * @param {string} id fragment's id
    * @returns Promise<Fragment>
    */
-  static async byId(ownerId, id) {
-    // TODO
-    const fragment = await readFragment(ownerId, id);
-    return new Fragment(fragment);
+  static async byId(vOwnerId, vId) {
+    // const { id, created, ownerId, updated, type, size } = await readFragment(vOwnerId, vId);
+    // return new Fragment({ id, created, ownerId, updated, type, size });
+
+    const resp= await readFragment(vOwnerId, vId);
+    if(!resp){
+      throw new Error('Fragment does not exist')
+    }
+    return resp;
   }
 
   /**
@@ -78,7 +90,8 @@ class Fragment {
    * @returns Promise<void>
    */
   save() {
-    return writeFragment({ ...this, updated: new Date().toISOString() });
+    this.updated=new Date().toISOString();
+    return writeFragment(this);
   }
 
   /**
@@ -102,6 +115,7 @@ class Fragment {
     }
     this.size = data.length;
     await this.save();
+
     return writeFragmentData(this.ownerId, this.id, data);
   }
 

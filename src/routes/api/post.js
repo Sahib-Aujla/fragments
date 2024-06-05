@@ -12,11 +12,11 @@ module.exports = async (req, res) => {
   logger.debug(req);
 
   const { type } = contentType.parse(req);
-  logger.debug({type});
-  if (type!=='text/plain') {
+  logger.debug({ type });
+  if (type !== 'text/plain') {
     return res.status(415).json(createErrorResponse(415, 'Invalid type'));
   }
-  logger.debug('buffer: ',req.body);
+  logger.debug('buffer: ', req.body);
   if (!req.body || !Buffer.isBuffer(req.body) || req.body.length === 0) {
     return res.status(415).json(createErrorResponse(415, 'Invalid data'));
   }
@@ -25,12 +25,9 @@ module.exports = async (req, res) => {
     const size = parseInt(req.headers['content-length']) || req.body.length;
     logger.debug('type' + type);
     let newFragment = new Fragment({ ownerId: req.user, size, type });
+    await newFragment.setData(req.body);
     logger.debug('new Fragment', { newFragment });
-    try {
-      await newFragment.setData(req.body);
-    } catch (error) {
-      logger.debug('error saving data', error);
-    }
+
     logger.info(req.headers.host);
     logger.info(process.env.API_URL + '   port');
     let url;
@@ -43,12 +40,8 @@ module.exports = async (req, res) => {
     }
     logger.info('url: ' + url);
     let location;
-    try {
-      location = new URL('/v1/fragments/' + newFragment.id, url);
-    } catch (error) {
-      logger.error('location error', { error });
-      return res.status(500).json(createErrorResponse(500, 'server error'));
-    }
+
+    location = new URL('/v1/fragments/' + newFragment.id, url);
 
     logger.info('successfully created fragment');
     logger.debug({ location });
@@ -57,7 +50,7 @@ module.exports = async (req, res) => {
       .location('location')
       .json(createSuccessResponse({ fragment: newFragment }));
   } catch (error) {
-    logger.error('error saving fragment', { error });
+    logger.error('error creating fragment', { error });
 
     res.status(500).json(createErrorResponse(500, 'Server error: ' + error));
   }
