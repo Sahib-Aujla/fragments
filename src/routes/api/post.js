@@ -2,7 +2,7 @@ const { createSuccessResponse, createErrorResponse } = require('../../response')
 const { Fragment } = require('../../model/fragment');
 const contentType = require('content-type');
 const logger = require('../../logger');
-
+require('dotenv').config();
 /**
  * Get a list of fragments for the current user
  */
@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
     let url;
     if (!process.env.API_URL) {
       const host = req.headers.host;
-      const protocol = req.protocol || 'http'; // Ensure there's a protocol
+      const protocol = req.protocol || 'http';
       url = `${protocol}://${host}`;
     } else {
       url = process.env.API_URL;

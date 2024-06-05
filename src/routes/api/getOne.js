@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
   } catch (error) {
     logger.info('error getting one fragment');
     logger.debug({ error });
-    return res.status(500).json(createErrorResponse(500, error));
+    return res.status(500).json(createErrorResponse(500, 'error getting fragment'));
   }
   logger.debug({ data });
   return res.status(200).json(createSuccessResponse({ fragment: data }));
