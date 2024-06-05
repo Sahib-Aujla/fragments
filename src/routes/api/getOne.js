@@ -1,18 +1,24 @@
-// src/routes/api/get.js
+// src/routes/api/getOne.js
 
-const { createSuccessResponse } = require('../../response');
+const { createSuccessResponse, createErrorResponse } = require('../../response');
 
 const { Fragment } = require('../../model/fragment');
 const logger = require('../../logger');
 /**
- * Get a list of fragments for the current user
+ * Get a single fragment for the current user
  */
 module.exports = async (req, res) => {
-  // TODO: this is just a placeholder. To get something working, return an empty array...
-  logger.info('request received to get a single fragment.');
   const { id } = req.params;
-  logger.debug('received id: ' + id);
-  let data = await Fragment.byId(req.user, id);
+  logger.info('received id: ' + id);
+  logger.info('request received to get a single fragment.');
+  let data;
+  try {
+    data = await Fragment.byId(req.user, id);
+  } catch (error) {
+    logger.info('error getting one fragment');
+    logger.debug({ error });
+    return res.status(500).json(createErrorResponse(500, error));
+  }
   logger.debug({ data });
-  res.status(200).json(createSuccessResponse({ fragment: data }));
+  return res.status(200).json(createSuccessResponse({ fragment: data }));
 };
