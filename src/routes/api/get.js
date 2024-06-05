@@ -8,7 +8,6 @@ const logger = require('../../logger');
  * Get a list of fragments for the current user
  */
 module.exports = async (req, res) => {
-  // TODO: this is just a placeholder. To get something working, return an empty array...
   logger.info('request received to get fragments.');
   const { expand } = req.query;
   logger.debug({ expand });

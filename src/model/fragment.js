@@ -25,7 +25,7 @@ class Fragment {
     type,
     size = 0,
   }) {
-    // TODO
+
     if (!ownerId || !type) {
       logger.debug('here' + ownerId + '  ' + type);
       const val = ownerId ? 'type' : 'ownerId';
@@ -53,7 +53,7 @@ class Fragment {
    * @returns Promise<Array<Fragment>>
    */
   static async byUser(ownerId, expand = false) {
-    // TODO
+  
     return listFragments(ownerId, expand);
   }
 
@@ -81,7 +81,7 @@ class Fragment {
    * @returns Promise<void>
    */
   static delete(ownerId, id) {
-    // TODO
+     
     return deleteFragment(ownerId, id);
   }
 
@@ -99,7 +99,7 @@ class Fragment {
    * @returns Promise<Buffer>
    */
   getData() {
-    // TODO
+     
     return readFragmentData(this.ownerId, this.id);
   }
 
@@ -109,7 +109,7 @@ class Fragment {
    * @returns Promise<void>
    */
   async setData(data) {
-    // TODO
+     
     if (!Buffer.isBuffer(data)) {
       throw new Error('Invalid data type');
     }
@@ -134,7 +134,7 @@ class Fragment {
    * @returns {boolean} true if fragment's type is text/*
    */
   get isText() {
-    // TODO
+     
     return this.mimeType.startsWith('text/');
   }
 
@@ -143,7 +143,7 @@ class Fragment {
    * @returns {Array<string>} list of supported mime types
    */
   get formats() {
-    // TODO
+     
     return Fragment.supportedTypes || [];
   }
 
@@ -153,7 +153,7 @@ class Fragment {
    * @returns {boolean} true if we support this Content-Type (i.e., type/subtype)
    */
   static isSupportedType(value) {
-    // TODO
+     
     const { type } = contentType.parse(value);
     return Fragment.supportedTypes.includes(type);
   }
