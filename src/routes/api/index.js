@@ -11,6 +11,8 @@ const router = express.Router();
 
 // Define our first route, which will be: GET /v1/fragments
 router.get('/fragments', require('./get'));
+
+router.get('/fragments/:id',require('./getOne'))
 // Other routes (POST, DELETE, etc.) will go here later on...
 // Support sending various Content-Types on the body up to 5M in size
 const rawBody = () =>
