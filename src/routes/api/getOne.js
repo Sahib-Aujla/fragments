@@ -15,11 +15,6 @@ module.exports = async (req, res) => {
     const fragment = await Fragment.byId(req.user, id);
     logger.debug({ fragment });
 
-    if (!fragment) {
-      logger.info(`Fragment with id ${id} not found for user`);
-      return res.status(404).json(createErrorResponse(404, 'Fragment not found'));
-    }
-
     const data = await fragment.getData();
     logger.debug({ data });
 
