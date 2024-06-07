@@ -1,6 +1,6 @@
 // src/routes/api/getOne.js
 
-const { createSuccessResponse, createErrorResponse } = require('../../response');
+const { createErrorResponse } = require('../../response');
 
 const { Fragment } = require('../../model/fragment');
 const logger = require('../../logger');
@@ -9,16 +9,23 @@ const logger = require('../../logger');
  */
 module.exports = async (req, res) => {
   const { id } = req.params;
-  logger.info('received id: ' + id);
-  logger.info('request received to get a single fragment.');
-  let data;
+  logger.info(`Request received to get fragment with id: ${id}`);
+
   try {
-    data = await Fragment.byId(req.user, id);
+    const fragment = await Fragment.byId(req.user, id);
+    logger.debug({ fragment });
+
+    if (!fragment) {
+      logger.info(`Fragment with id ${id} not found for user`);
+      return res.status(404).json(createErrorResponse(404, 'Fragment not found'));
+    }
+
+    const data = await fragment.getData();
+    logger.debug({ data });
+
+    return res.status(200).type(fragment.mimeType).send(data);
   } catch (error) {
-    logger.info('error getting one fragment');
-    logger.debug({ error });
-    return res.status(500).json(createErrorResponse(500, 'error getting fragment'));
+    logger.error('Error retrieving fragment', { error });
+    return res.status(500).json(createErrorResponse(500, 'Error retrieving fragment'));
   }
-  logger.debug({ data });
-  return res.status(200).json(createSuccessResponse({ fragment: data }));
 };

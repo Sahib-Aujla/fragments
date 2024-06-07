@@ -17,7 +17,7 @@ describe('GET /v1/fragments/:id', () => {
       .auth('invalid@email.com', 'incorrect_password')
       .expect(401));
 
-  // Using a valid username/password pair should give a success result with a .fragments array
+  // Using a valid username/password pair should give a success result with the valid text
   test('authenticated users get a fragment', async () => {
     const res1 = await request(app)
       .post('/v1/fragments')
@@ -31,8 +31,7 @@ describe('GET /v1/fragments/:id', () => {
       .auth('user1@email.com', 'password1');
     logger.debug({ res });
     expect(res.statusCode).toBe(200);
-    expect(res.body.status).toBe('ok');
-    expect(res.body.fragment).toEqual(res1.body.fragment);
+    expect(res.text).toEqual('hello');
   });
 
   test('authenticated users sends an invalid id', async () => {
