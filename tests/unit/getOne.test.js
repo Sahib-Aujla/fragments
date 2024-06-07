@@ -40,6 +40,6 @@ describe('GET /v1/fragments/:id', () => {
     expect(res.statusCode).toBe(500);
     expect(res.body.status).toBe('error');
     expect(res.body.error.code).toBe(500);
-    expect(res.body.error.message).toBe('error getting fragment');
+    expect(res.body.error.message).toBe('Error retrieving fragment');
   });
 });
