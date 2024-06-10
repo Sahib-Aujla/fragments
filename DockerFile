@@ -1,0 +1,41 @@
+FROM node:20.12.2
+
+LABEL maintainer="Sahibpreet Singh sahibpreet-singh1@myseneca.ca" \
+    Description="Fragments node.js microservice"
+
+# We default to use port 8080 in our service
+ENV PORT=8080
+
+# Reduce npm spam when installing within Docker
+# https://docs.npmjs.com/cli/v8/using-npm/config#loglevel
+ENV NPM_CONFIG_LOGLEVEL=warn
+
+# Disable colour when run inside Docker
+# https://docs.npmjs.com/cli/v8/using-npm/config#color
+ENV NPM_CONFIG_COLOR=false
+
+# Working directory in docker container
+WORKDIR /app
+
+
+# Using this instead of copying the whole directory (COPY . /app) due to docker caching and layering
+COPY package.*.json /app/
+
+# Install node dependencies defined in package-lock.json
+RUN npm install 
+
+# copy src to /app/src
+COPY ./src ./src
+
+CMD ["npm","start"]
+
+
+# This does not do anything only for documentation puroposes
+# A port mapping is required when running the container
+EXPOSE 8080
+
+
+
+
+
+
