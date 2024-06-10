@@ -19,13 +19,17 @@ WORKDIR /app
 
 
 # Using this instead of copying the whole directory (COPY . /app) due to docker caching and layering
-COPY package.*.json /app/
+COPY package.json package-lock.json /app/
 
 # Install node dependencies defined in package-lock.json
 RUN npm install 
 
 # copy src to /app/src
 COPY ./src ./src
+
+
+# Copy our HTPASSWD file
+COPY ./tests/.htpasswd ./tests/.htpasswd
 
 CMD ["npm","start"]
 
