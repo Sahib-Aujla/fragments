@@ -1,4 +1,4 @@
-// src/routes/api/getOne.js
+// src/routes/api/getOneMeta.js
 
 const { createErrorResponse, createSuccessResponse } = require('../../response');
 
