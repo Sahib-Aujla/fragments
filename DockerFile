@@ -63,6 +63,9 @@ CMD ["npm","start"]
 # A port mapping is required when running the container
 EXPOSE 8080
 
+HEALTHCHECK --interval=100s --timeout=100s --start-period=5s --retries=3 \
+  CMD curl --fail localhost:8080 || exit 1
+
 
 
 
