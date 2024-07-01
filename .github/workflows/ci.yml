@@ -40,8 +40,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # https://github.com/marketplace/actions/hadolint-action
-      - uses: actions/checkout@v4
-      - run: ls -la
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Run Hadolint
         uses: hadolint/hadolint-action@v3.1.0
         with:
