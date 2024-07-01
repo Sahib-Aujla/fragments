@@ -1,9 +1,9 @@
 
-# Stage 0
+# Stage 0 dowloading dependencies 
 FROM node:20.12.2@sha256:3864be2201676a715cf240cfc17aec1d62459f92a7cbe7d32d1675e226e736c9 AS dependencies
 
-LABEL maintainer="Sahibpreet Singh sahibpreet-singh1@myseneca.ca" \
-    Description="Fragments node.js microservice"
+LABEL maintainer="Sahibpreet Singh sahibpreet-singh1@myseneca.ca" 
+LABEL description="Fragments node.js microservice"
 
 
 # setting node env to production
