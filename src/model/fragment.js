@@ -16,7 +16,7 @@ const {
 const logger = require('../logger');
 
 class Fragment {
-  static supportedTypes = ['text/plain'];
+  static supportedTypes = ['text/plain','application/json'];
   constructor({
     id,
     ownerId,
