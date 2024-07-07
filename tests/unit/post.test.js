@@ -48,11 +48,11 @@ describe('POST /v1/fragments', () => {
     });
   });
 
-  test('authenticated user sends application/json as request', async () => {
+  test('authenticated user sends image/png as request', async () => {
     const res = await request(app)
       .post('/v1/fragments')
       .auth('user1@email.com', 'password1')
-      .set('Content-Type', 'application/json')
+      .set('Content-Type', 'image/png')
       .send('hello');
     logger.debug({ res });
     expect(res.statusCode).toBe(415);

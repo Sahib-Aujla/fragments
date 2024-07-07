@@ -143,8 +143,12 @@ class Fragment {
    * @returns {Array<string>} list of supported mime types
    */
   get formats() {
-     
-    return Fragment.supportedTypes || [];
+    const validConversions = {
+      'text/plain': ['text/plain'],
+      'text/markdown': ['text/markdown', 'text/html', 'text/plain'],
+      'text/html': ['text/html', 'text/plain'],
+    };
+    return validConversions[this.mimeType] || [];
   }
 
   /**
