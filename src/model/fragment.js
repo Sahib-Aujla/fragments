@@ -3,7 +3,8 @@
 const { randomUUID } = require('crypto');
 // Use https://www.npmjs.com/package/content-type to create/parse Content-Type headers
 const contentType = require('content-type');
-
+const markdown = require('markdown-it');
+const md = markdown();
 // Functions for working with fragment metadata/data using our DB
 const {
   readFragment,
@@ -16,7 +17,7 @@ const {
 const logger = require('../logger');
 
 class Fragment {
-  static supportedTypes = ['text/plain','application/json'];
+  static supportedTypes = ['text/plain', 'application/json', 'text/html', 'text/markdown'];
   constructor({
     id,
     ownerId,
@@ -25,7 +26,6 @@ class Fragment {
     type,
     size = 0,
   }) {
-
     if (!ownerId || !type) {
       logger.debug('here' + ownerId + '  ' + type);
       const val = ownerId ? 'type' : 'ownerId';
@@ -53,7 +53,6 @@ class Fragment {
    * @returns Promise<Array<Fragment>>
    */
   static async byUser(ownerId, expand = false) {
-  
     return listFragments(ownerId, expand);
   }
 
@@ -67,9 +66,9 @@ class Fragment {
     // const { id, created, ownerId, updated, type, size } = await readFragment(vOwnerId, vId);
     // return new Fragment({ id, created, ownerId, updated, type, size });
 
-    const resp= await readFragment(vOwnerId, vId);
-    if(!resp){
-      throw new Error('Fragment does not exist')
+    const resp = await readFragment(vOwnerId, vId);
+    if (!resp) {
+      throw new Error('Fragment does not exist');
     }
     return resp;
   }
@@ -81,7 +80,6 @@ class Fragment {
    * @returns Promise<void>
    */
   static delete(ownerId, id) {
-     
     return deleteFragment(ownerId, id);
   }
 
@@ -90,7 +88,7 @@ class Fragment {
    * @returns Promise<void>
    */
   save() {
-    this.updated=new Date().toISOString();
+    this.updated = new Date().toISOString();
     return writeFragment(this);
   }
 
@@ -99,7 +97,6 @@ class Fragment {
    * @returns Promise<Buffer>
    */
   getData() {
-     
     return readFragmentData(this.ownerId, this.id);
   }
 
@@ -109,7 +106,6 @@ class Fragment {
    * @returns Promise<void>
    */
   async setData(data) {
-     
     if (!Buffer.isBuffer(data)) {
       throw new Error('Invalid data type');
     }
@@ -130,11 +126,49 @@ class Fragment {
   }
 
   /**
+   * Returns the mime type of the extension:
+   * "txt" -> "text/html"
+   * @returns {string} fragment's mime type (without encoding)
+   */
+  mimeTypeOf(extension) {
+    const mType = {
+      txt: 'text/plain',
+      md: 'text/markdown',
+      html: 'text/html',
+      json: 'application/json',
+    };
+    return mType[extension];
+  }
+
+  /**
+   * Returns the converted data for the extension:
+   * Checks if conversion possible and then converts the data
+   * "text/html; charset=utf-8" -> "text/html"
+   * @returns {Buffer data}
+   */
+  async convertData(extension) {
+    try {
+      const mType = this.mimeTypeOf(extension);
+      logger.debug({ mType });
+
+      if (!this.formats.includes(mType)) return null;
+      const data = await this.getData();
+
+      if (this.mimeType === 'text/markdown' && extension === 'html')
+        return Buffer.from(md.render(data.toString('utf-8')), 'utf-8');
+
+      return data;
+    } catch (error) {
+      logger.error('Error in convertData method', { error });
+      throw new Error('Data conversion failed');
+    }
+  }
+
+  /**
    * Returns true if this fragment is a text/* mime type
    * @returns {boolean} true if fragment's type is text/*
    */
   get isText() {
-     
     return this.mimeType.startsWith('text/');
   }
 
@@ -157,7 +191,6 @@ class Fragment {
    * @returns {boolean} true if we support this Content-Type (i.e., type/subtype)
    */
   static isSupportedType(value) {
-     
     const { type } = contentType.parse(value);
     return Fragment.supportedTypes.includes(type);
   }
