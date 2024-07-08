@@ -257,16 +257,32 @@ describe('Fragment class', () => {
 
   describe('mimeTypeOf(), convertData()', () => {
     describe('mimeTypeOf', () => {
-      test('mimeTypeOf return correct data', async () => {
+      test('mimeTypeOf return correct data', () => {
         const fragment = new Fragment({ ownerId: '1234', type: 'text/plain', size: 0 });
         const mType = fragment.mimeTypeOf('html');
         expect(mType).toBe('text/html');
       });
 
-      test('mimeTypeOf return undefined', async () => {
+      test('mimeTypeOf return undefined', () => {
         const fragment = new Fragment({ ownerId: '1234', type: 'text/plain', size: 0 });
         const mType = fragment.mimeTypeOf('invalid');
         expect(mType).toBe(undefined);
+      });
+    });
+
+    describe('convertData()', () => {
+      test('convertData() return html data from markdown data', async () => {
+        const fragment = new Fragment({ ownerId: '1234', type: 'text/markdown', size: 0 });
+        await fragment.setData(Buffer.from('# This is test Markdown.'));
+        const data = await fragment.convertData('html');
+        expect(data.toString()).toEqual('<h1>This is test Markdown.</h1>\n');
+      });
+
+      test('convertData() return null for invalid conversion', async () => {
+        const fragment = new Fragment({ ownerId: '1234', type: 'text/plain', size: 0 });
+        await fragment.setData(Buffer.from('This is test text.'));
+        const data = await fragment.convertData('html');
+        expect(data).toBe(null);
       });
     });
   });
