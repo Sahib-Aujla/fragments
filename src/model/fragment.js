@@ -17,7 +17,14 @@ const {
 const logger = require('../logger');
 
 class Fragment {
-  static supportedTypes = ['text/plain', 'application/json', 'text/html', 'text/markdown'];
+  static supportedTypes = [
+    'text/plain',
+    'text/html',
+    'text/markdown',
+    'text/csv',
+    'application/json',
+    'application/x-yaml',
+  ];
   constructor({
     id,
     ownerId,
@@ -135,7 +142,10 @@ class Fragment {
       txt: 'text/plain',
       md: 'text/markdown',
       html: 'text/html',
+      csv: 'text/csv',
       json: 'application/json',
+      yaml: 'application/x-yaml',
+      yml: 'application/x-yaml',
     };
     return mType[extension];
   }
@@ -181,6 +191,8 @@ class Fragment {
       'text/plain': ['text/plain'],
       'text/markdown': ['text/markdown', 'text/html', 'text/plain'],
       'text/html': ['text/html', 'text/plain'],
+      'text/csv': ['text/csv', 'text/plain', 'application/json'],
+      'application/json': ['application/json', 'application/x-yaml', 'text/plain'],
     };
     return validConversions[this.mimeType] || [];
   }
