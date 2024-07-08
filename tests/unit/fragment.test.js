@@ -6,7 +6,7 @@ const wait = async (ms = 10) => new Promise((resolve) => setTimeout(resolve, ms)
 
 const validTypes = [
   `text/plain`,
-  'application/json'
+  'application/json',
   /*
    Currently, only text/plain is supported. Others will be added later.
 
@@ -252,6 +252,22 @@ describe('Fragment class', () => {
 
       await Fragment.delete('1234', fragment.id);
       expect(() => Fragment.byId('1234', fragment.id)).rejects.toThrow();
+    });
+  });
+
+  describe('mimeTypeOf(), convertData()', () => {
+    describe('mimeTypeOf', () => {
+      test('mimeTypeOf return correct data', async () => {
+        const fragment = new Fragment({ ownerId: '1234', type: 'text/plain', size: 0 });
+        const mType = fragment.mimeTypeOf('html');
+        expect(mType).toBe('text/html');
+      });
+
+      test('mimeTypeOf return undefined', async () => {
+        const fragment = new Fragment({ ownerId: '1234', type: 'text/plain', size: 0 });
+        const mType = fragment.mimeTypeOf('invalid');
+        expect(mType).toBe(undefined);
+      });
     });
   });
 });
