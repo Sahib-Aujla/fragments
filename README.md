@@ -14,6 +14,7 @@ Before you start, ensure you have Node.js installed on your machine. Additionall
 - `pino`
 - `helmet`
 - `compression`
+- `markdown-it`
 
 You can install them using npm:
 
