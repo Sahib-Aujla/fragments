@@ -77,7 +77,7 @@ jobs:
           VERSION_TAG: ${{ github.ref_name }}
         with:
           task-definition: fragments-definition.json
-          container-name: fragment-cluster
+          container-name: fragments-container
           # Use the image we just built and pushed to ECR for this tag
           image: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO }}:${{ env.VERSION_TAG }}
           # Add all the necessary environment variables, using GitHub Encrypted Secrets for any values that should not be checked into git directly. Here are a few to get you started, but you should fill in the rest yourself.
@@ -93,6 +93,6 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.update-task-def.outputs.task-definition }}
-          cluster: fragments-cluster
+          cluster: fragment-cluster
           service: fragments-service
           wait-for-service-stability: true
