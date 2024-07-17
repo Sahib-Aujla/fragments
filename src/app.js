@@ -17,7 +17,6 @@ const pino = require('pino-http')({
 // Create an express app instance we can use to attach middleware and HTTP routes
 const app = express();
 
-
 // Use pino logging middleware
 app.use(pino);
 // Use helmetjs security middleware
@@ -40,7 +39,7 @@ app.use(passport.initialize());
 // we'll respond with a 200 OK.  If not, the server isn't healthy.
 app.use('/', require('./routes'));
 
-// Add 404 middleware to handle any requests for resources that can't be found
+// // Add 404 middleware to handle any requests for resources that can't be found
 app.use((req, res) => {
   const errorResponse = createErrorResponse(404, 'not found');
   res.status(404).json(errorResponse);
