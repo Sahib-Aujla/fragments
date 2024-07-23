@@ -1,7 +1,7 @@
 const logger = require('../../../logger');
 const MemoryDB = require('../memory/memory-db');
 const s3Client = require('./s3client');
-const { PutObjectCommand } = require('@aws-sdk/client-s3');
+const { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 
 // Create two in-memory databases: one for fragment metadata and the other for raw data
 const data = new MemoryDB();
@@ -41,9 +41,46 @@ async function writeFragmentData(ownerId, id, data) {
   }
 }
 
+const streamToBuffer = (stream) =>
+  new Promise((resolve, reject) => {
+    // As the data streams in, we'll collect it into an array.
+    const chunks = [];
+
+    // Streams have events that we can listen for and run
+    // code.  We need to know when new `data` is available,
+    // if there's an `error`, and when we're at the `end`
+    // of the stream.
+
+    // When there's data, add the chunk to our chunks list
+    stream.on('data', (chunk) => chunks.push(chunk));
+    // When there's an error, reject the Promise
+    stream.on('error', reject);
+    // When the stream is done, resolve with a new Buffer of our chunks
+    stream.on('end', () => resolve(Buffer.concat(chunks)));
+  });
+
 // Read a fragment's data from memory db. Returns a Promise
-function readFragmentData(ownerId, id) {
-  return data.get(ownerId, id);
+async function readFragmentData(ownerId, id) {
+  // Create the PUT API params from our details
+  const params = {
+    Bucket: process.env.AWS_S3_BUCKET_NAME,
+    // Our key will be a mix of the ownerID and fragment id, written as a path
+    Key: `${ownerId}/${id}`,
+  };
+
+  // Create a GET Object command to send to S3
+  const command = new GetObjectCommand(params);
+
+  try {
+    // Get the object from the Amazon S3 bucket. It is returned as a ReadableStream.
+    const data = await s3Client.send(command);
+    // Convert the ReadableStream to a Buffer
+    return streamToBuffer(data.Body);
+  } catch (err) {
+    const { Bucket, Key } = params;
+    logger.error({ err, Bucket, Key }, 'Error streaming fragment data from S3');
+    throw new Error('unable to read fragment data');
+  }
 }
 
 // Get a list of fragment ids/objects for the given user from memory db. Returns a Promise
@@ -60,13 +97,27 @@ async function listFragments(ownerId, expand = false) {
 }
 
 // Delete a fragment's metadata and data from memory db. Returns a Promise
-function deleteFragment(ownerId, id) {
-  return Promise.all([
-    // Delete metadata
-    metadata.del(ownerId, id),
-    // Delete data
-    data.del(ownerId, id),
-  ]);
+async function deleteFragment(ownerId, id) {
+  const params = {
+    Bucket: process.env.AWS_S3_BUCKET_NAME,
+    // Our key will be a mix of the ownerID and fragment id, written as a path
+    Key: `${ownerId}/${id}`,
+    Body: data,
+  };
+
+  // Create a PUT Object command to send to S3
+  const command = new DeleteObjectCommand(params);
+
+  try {
+    // Use our client to send the command
+    await s3Client.send(command);
+    metadata.del(ownerId, id);
+  } catch (err) {
+    // If anything goes wrong, log enough info that we can debug
+    const { Bucket, Key } = params;
+    logger.error({ err, Bucket, Key }, 'Error deleting fragment data to S3');
+    throw new Error('unable to delte fragment data');
+  }
 }
 
 module.exports.listFragments = listFragments;

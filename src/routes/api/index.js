@@ -16,7 +16,7 @@ router.get('/fragments/:id', require('./getOne'));
 
 //to get fragment meta data
 router.get('/fragments/:id/info', require('./getOneMeta'));
-
+router.delete('/fragments/:id', require('./deleteOne'));
 
 // Other routes (POST, DELETE, etc.) will go here later on...
 // Support sending various Content-Types on the body up to 5M in size
