@@ -1,5 +1,7 @@
 const logger = require('../../../logger');
-const MemoryDB = require('./memory-db');
+const MemoryDB = require('../memory/memory-db');
+const s3Client = require('./s3client');
+const { PutObjectCommand } = require('@aws-sdk/client-s3');
 
 // Create two in-memory databases: one for fragment metadata and the other for raw data
 const data = new MemoryDB();
@@ -17,8 +19,26 @@ function readFragment(ownerId, id) {
 }
 
 // Write a fragment's data buffer to memory db. Returns a Promise
-function writeFragmentData(ownerId, id, buffer) {
-  return data.put(ownerId, id, buffer);
+async function writeFragmentData(ownerId, id, data) {
+  const params = {
+    Bucket: process.env.AWS_S3_BUCKET_NAME,
+    // Our key will be a mix of the ownerID and fragment id, written as a path
+    Key: `${ownerId}/${id}`,
+    Body: data,
+  };
+
+  // Create a PUT Object command to send to S3
+  const command = new PutObjectCommand(params);
+
+  try {
+    // Use our client to send the command
+    await s3Client.send(command);
+  } catch (err) {
+    // If anything goes wrong, log enough info that we can debug
+    const { Bucket, Key } = params;
+    logger.error({ err, Bucket, Key }, 'Error uploading fragment data to S3');
+    throw new Error('unable to upload fragment data');
+  }
 }
 
 // Read a fragment's data from memory db. Returns a Promise
@@ -34,7 +54,6 @@ async function listFragments(ownerId, expand = false) {
   if (expand || !fragments) {
     return fragments;
   }
-  
 
   // Otherwise, map to only send back the ids
   return fragments.map((fragment) => fragment.id);
