@@ -61,7 +61,6 @@ user1@email.com:password1
 HTTP/1.1 404
 
 
-
 #Trying to delete again
 DELETE {{url}}
 # Include authorization header
@@ -70,3 +69,4 @@ user1@email.com:password1
 
 # Status code 404
 HTTP/1.1 404
+

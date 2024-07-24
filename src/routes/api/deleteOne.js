@@ -10,7 +10,12 @@ module.exports = async (req, res) => {
   const ownerid = req.user;
 
   try {
-    logger.debug('DELETE: request received to delete fragment: ' + id);
+    logger.debug('DELETE: request received to delete fragment: ' + id + ' ' + ownerid);
+    const fragment = await Fragment.byId(ownerid, id);
+    if (!fragment) {
+      logger.error('Fragment not found: ' + id);
+      return res.status(404).json(createErrorResponse(404, 'Fragment not found'));
+    }
 
     await Fragment.delete(ownerid, id);
 
@@ -20,6 +25,7 @@ module.exports = async (req, res) => {
   } catch (e) {
     logger.error('Error deleting fragment: ' + e);
 
+    logger.info('here3');
     return res.status(404).json(createErrorResponse(404, 'Fragment not found'));
   }
 };
