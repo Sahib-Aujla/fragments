@@ -30,10 +30,10 @@ module.exports = async (req, res) => {
     }
     const data = await fragment.getData();
     logger.debug({ data });
-    
+
     return res.status(200).type(fragment.mimeType).send(data);
   } catch (error) {
     logger.error('Error retrieving fragment', { error });
-    return res.status(500).json(createErrorResponse(500, 'Error retrieving fragment'));
+    return res.status(404).json(createErrorResponse(404, 'Error retrieving fragment'));
   }
 };

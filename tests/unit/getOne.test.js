@@ -68,9 +68,9 @@ describe('GET /v1/fragments/:id', () => {
   test('authenticated users sends an invalid id', async () => {
     const res = await request(app).get(`/v1/fragments/abc`).auth('user1@email.com', 'password1');
     logger.debug({ res });
-    expect(res.statusCode).toBe(500);
+    expect(res.statusCode).toBe(404);
     expect(res.body.status).toBe('error');
-    expect(res.body.error.code).toBe(500);
+    expect(res.body.error.code).toBe(404);
     expect(res.body.error.message).toBe('Error retrieving fragment');
   });
 });

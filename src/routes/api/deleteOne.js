@@ -7,16 +7,19 @@ const logger = require('../../logger');
  */
 module.exports = async (req, res) => {
   const { id } = req.params;
-  try {
-    const fragment = await Fragment.byId(id);
-    logger.debug('DELETE: request received to delete fragment: ' + id);
-    if (!fragment) {
-      return res.send(200).json(createSuccessResponse({ message: 'fragment not found' }));
-    }
+  const ownerid = req.user;
 
-    await fragment.delete();
-    res.send(200).json(createSuccessResponse({ message: 'fragment deleted successfully' }));
-  } catch (error) {
-    return res.send(404).json(createErrorResponse(404, error));
+  try {
+    logger.debug('DELETE: request received to delete fragment: ' + id);
+
+    await Fragment.delete(ownerid, id);
+
+    return res
+      .status(200)
+      .json(createSuccessResponse({ message: 'Fragment deleted successfully' }));
+  } catch (e) {
+    logger.error('Error deleting fragment: ' + e);
+
+    return res.status(404).json(createErrorResponse(404, 'Fragment not found'));
   }
 };
