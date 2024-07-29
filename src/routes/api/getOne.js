@@ -28,12 +28,18 @@ module.exports = async (req, res) => {
         logger.error('error converting data', { error });
       }
     }
+    logger.debug('Here1');
     const data = await fragment.getData();
+    logger.debug('Here2');
+
     logger.debug({ data });
+    logger.debug('Here3');
 
     return res.status(200).type(fragment.mimeType).send(data);
   } catch (error) {
     logger.error('Error retrieving fragment', { error });
+    logger.error(error);
+
     return res.status(404).json(createErrorResponse(404, 'Error retrieving fragment'));
   }
 };

@@ -3,10 +3,11 @@ const s3Client = require('./s3client');
 const ddbDocClient = require('./ddbDocClient');
 const { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const { PutCommand, GetCommand, QueryCommand, DeleteCommand } = require('@aws-sdk/lib-dynamodb');
+
 // Create two in-memory databases: one for fragment metadata and the other for raw data
 
 // Write a fragment's metadata to memory db. Returns a Promise
-function writeFragment(fragment) {
+async function writeFragment(fragment) {
   // Configure our PUT params, with the name of the table and item (attributes and keys)
   const params = {
     TableName: process.env.AWS_DYNAMODB_TABLE_NAME,
@@ -17,7 +18,7 @@ function writeFragment(fragment) {
   const command = new PutCommand(params);
 
   try {
-    return ddbDocClient.send(command);
+    return await ddbDocClient.send(command);
   } catch (err) {
     logger.warn({ err, params, fragment }, 'error writing fragment to DynamoDB');
     throw err;
@@ -96,6 +97,7 @@ async function readFragmentData(ownerId, id) {
     // Our key will be a mix of the ownerID and fragment id, written as a path
     Key: `${ownerId}/${id}`,
   };
+  logger.debug('Here4');
 
   // Create a GET Object command to send to S3
   const command = new GetObjectCommand(params);
@@ -104,10 +106,12 @@ async function readFragmentData(ownerId, id) {
     // Get the object from the Amazon S3 bucket. It is returned as a ReadableStream.
     const data = await s3Client.send(command);
     // Convert the ReadableStream to a Buffer
+    logger.debug('Here5');
+
     return streamToBuffer(data.Body);
   } catch (err) {
     const { Bucket, Key } = params;
-    logger.error({ err, Bucket, Key }, 'Error streaming fragment data from S3');
+    logger.debug({ err, Bucket, Key }, 'Error streaming fragment data from S3');
     throw new Error('unable to read fragment data');
   }
 }

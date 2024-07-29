@@ -77,7 +77,7 @@ class Fragment {
     if (!resp) {
       throw new Error('Fragment does not exist');
     }
-    return resp;
+    return new Fragment(resp);
   }
 
   /**
@@ -104,6 +104,7 @@ class Fragment {
    * @returns Promise<Buffer>
    */
   getData() {
+    logger.debug('here0');
     return readFragmentData(this.ownerId, this.id);
   }
 
