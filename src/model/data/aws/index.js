@@ -97,7 +97,6 @@ async function readFragmentData(ownerId, id) {
     // Our key will be a mix of the ownerID and fragment id, written as a path
     Key: `${ownerId}/${id}`,
   };
-  logger.debug('Here4');
 
   // Create a GET Object command to send to S3
   const command = new GetObjectCommand(params);
@@ -106,7 +105,6 @@ async function readFragmentData(ownerId, id) {
     // Get the object from the Amazon S3 bucket. It is returned as a ReadableStream.
     const data = await s3Client.send(command);
     // Convert the ReadableStream to a Buffer
-    logger.debug('Here5');
 
     return streamToBuffer(data.Body);
   } catch (err) {

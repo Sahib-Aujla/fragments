@@ -34,7 +34,6 @@ class Fragment {
     size = 0,
   }) {
     if (!ownerId || !type) {
-      logger.debug('here' + ownerId + '  ' + type);
       const val = ownerId ? 'type' : 'ownerId';
       throw new Error(`${val} required`);
     }
@@ -104,7 +103,6 @@ class Fragment {
    * @returns Promise<Buffer>
    */
   getData() {
-    logger.debug('here0');
     return readFragmentData(this.ownerId, this.id);
   }
 

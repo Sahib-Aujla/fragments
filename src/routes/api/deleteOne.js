@@ -25,7 +25,6 @@ module.exports = async (req, res) => {
   } catch (e) {
     logger.error('Error deleting fragment: ' + e);
 
-    logger.info('here3');
     return res.status(404).json(createErrorResponse(404, 'Fragment not found'));
   }
 };
