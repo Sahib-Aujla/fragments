@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
   const fragmentId = req.params.id;
 
   try {
-    const existingFragment = await Fragment.byId(fragmentId);
+    const existingFragment = await Fragment.byId(req.user,fragmentId);
     if (!existingFragment) {
       return res.status(404).json(createErrorResponse(404, 'Fragment not found'));
     }
@@ -40,6 +40,6 @@ module.exports = async (req, res) => {
   } catch (error) {
     logger.error('error updating fragment', { error });
 
-    res.status(500).json(createErrorResponse(500, 'Server error: ' + error));
+    res.status(500).json(createErrorResponse(500, 'Server error'));
   }
 };
