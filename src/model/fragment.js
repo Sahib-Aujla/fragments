@@ -4,6 +4,9 @@ const { randomUUID } = require('crypto');
 // Use https://www.npmjs.com/package/content-type to create/parse Content-Type headers
 const contentType = require('content-type');
 const markdown = require('markdown-it');
+const sharp = require('sharp');
+const json2yaml = require('json2yaml');
+
 const md = markdown();
 // Functions for working with fragment metadata/data using our DB
 const {
@@ -28,7 +31,7 @@ class Fragment {
     'image/jpeg',
     'image/webp',
     'image/avif',
-    'image/gif'
+    'image/gif',
   ];
   constructor({
     id,
@@ -175,7 +178,20 @@ class Fragment {
 
       if (this.mimeType === 'text/markdown' && extension === 'html')
         return Buffer.from(md.render(data.toString('utf-8')), 'utf-8');
-
+      else if (this.mimeType.startsWith('image/')) {
+        const img = sharp(data);
+        if (extension == 'png' && this.mimeType !== 'image/png') return await img.png().toBuffer();
+        else if (extension == 'jpeg' && this.mimeType !== 'image/jpeg')
+          return await img.jpeg().toBuffer();
+        else if (extension == 'webp' && this.mimeType !== 'image/webp')
+          return await img.webp().toBuffer();
+        else if (extension == 'avif' && this.mimeType !== 'image/avif')
+          return await img.avif().toBuffer();
+        else if (extension == 'gif' && this.mimeType !== 'image/gif')
+          return await img.gif().toBuffer();
+      } else if (this.mimeType !== 'application/json' && extension === 'yaml') {
+        return Buffer.from(json2yaml.stringify(JSON.parse(data.toString('utf-8'))));
+      }
       return data;
     } catch (error) {
       logger.error('Error in convertData method', { error });
