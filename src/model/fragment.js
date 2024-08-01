@@ -24,6 +24,11 @@ class Fragment {
     'text/csv',
     'application/json',
     'application/x-yaml',
+    'image/png',
+    'image/jpeg',
+    'image/webp',
+    'image/avif',
+    'image/gif'
   ];
   constructor({
     id,
@@ -145,6 +150,11 @@ class Fragment {
       json: 'application/json',
       yaml: 'application/x-yaml',
       yml: 'application/x-yaml',
+      png: 'image/png',
+      jpeg: 'image/jpeg',
+      webp: 'image/webp',
+      avif: 'image/avif',
+      gif: 'image/gif',
     };
     return mType[extension];
   }
@@ -192,6 +202,11 @@ class Fragment {
       'text/html': ['text/html', 'text/plain'],
       'text/csv': ['text/csv', 'text/plain', 'application/json'],
       'application/json': ['application/json', 'application/x-yaml', 'text/plain'],
+      'image/png': ['image/png', 'image/jpeg', 'image/gif', 'image/avif', 'image/webp'],
+      'image/jpeg': ['image/png', 'image/jpeg', 'image/gif', 'image/avif', 'image/webp'],
+      'image/gif': ['image/png', 'image/jpeg', 'image/gif', 'image/avif', 'image/webp'],
+      'image/avif': ['image/png', 'image/jpeg', 'image/gif', 'image/avif', 'image/webp'],
+      'image/webp': ['image/png', 'image/jpeg', 'image/gif', 'image/avif', 'image/webp'],
     };
     return validConversions[this.mimeType] || [];
   }
