@@ -189,7 +189,7 @@ class Fragment {
           return await img.avif().toBuffer();
         else if (extension == 'gif' && this.mimeType !== 'image/gif')
           return await img.gif().toBuffer();
-      } else if (this.mimeType !== 'application/json' && extension === 'yaml') {
+      } else if (this.mimeType === 'application/json' && extension === 'yml') {
         return Buffer.from(json2yaml.stringify(JSON.parse(data.toString('utf-8'))));
       }
       return data;
